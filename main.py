@@ -4,9 +4,8 @@ import argparse
 from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
-from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.chains.sequential import SequentialChain
+from langchain_core.runnables import RunnablePassthrough, RunnableSequence
 
 load_dotenv()
 
@@ -27,29 +26,26 @@ code_prompt: PromptTemplate = PromptTemplate(
 )
 test_prompt: PromptTemplate = PromptTemplate(
     input_variables=["language", "code"],
-    template="Write a test for the following {language} code:\n{code}",
+    template="Write a test for the following {language} code:\n{code}\n. Return the code only.",
 )
 
-code_chain: LLMChain = LLMChain(
-    llm=llm,
-    prompt=code_prompt,
-    output_key="code",
+code_chain: RunnableSequence = RunnableSequence(
+    code_prompt,
+    llm,
+    lambda response: response.content,
 )
-test_chain: LLMChain = LLMChain(llm=llm, prompt=test_prompt, output_key="test")
-
-chain = SequentialChain(
-    chains=[code_chain, test_chain],
-    input_variables=["language", "task"],
-    output_variables=["code", "test"],
-    verbose=True,
+test_chain: RunnableSequence = RunnableSequence(
+    test_prompt,
+    llm,
+    lambda response: response.content,
 )
 
-result = chain.invoke(
-    {
-        "language": args.language,
-        "task": args.task,
-    }
+chain = RunnableSequence(
+    RunnablePassthrough.assign(code=lambda x: code_chain.invoke(x)),
+    RunnablePassthrough.assign(test=lambda x: test_chain.invoke(x)),
 )
+
+result = chain.invoke({"language": args.language, "task": args.task})
 
 print("Generated Code:\n", result["code"])
 print("\nGenerated Test:\n", result["test"])
