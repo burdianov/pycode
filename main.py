@@ -22,7 +22,7 @@ llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=openai_api_key)
 
 code_prompt = PromptTemplate(
     input_variables=["language", "task"],
-    template="Write a very sort {language} functon that will {task}. Return the code only.",
+    template="Write a very short {language} function that will {task}. Return the code only.",
 )
 
 code_chain = RunnableSequence(code_prompt, llm)
