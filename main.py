@@ -1,4 +1,5 @@
 import os
+import argparse
 
 from dotenv import load_dotenv
 
@@ -7,6 +8,11 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnableSequence
 
 load_dotenv()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--task", type=str, default="return a list of numbers")
+parser.add_argument("--language", type=str, default="python")
+args = parser.parse_args()
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=openai_api_key)
@@ -18,5 +24,5 @@ code_prompt = PromptTemplate(
 
 code_chain = RunnableSequence(code_prompt, llm)
 
-result = code_chain.invoke({"language": "python", "task": "return a list of numbers"})
+result = code_chain.invoke({"language": args.language, "task": args.task})
 print(result.content)
