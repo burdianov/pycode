@@ -26,7 +26,7 @@ code_prompt: PromptTemplate = PromptTemplate(
 )
 test_prompt: PromptTemplate = PromptTemplate(
     input_variables=["language", "code"],
-    template="Write a test for the following {language} code:\n{code}\n. Return the code only.",
+    template="Write a test for the following {language} code:\n{code}",
 )
 
 code_chain: RunnableSequence = RunnableSequence(
