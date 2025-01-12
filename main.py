@@ -17,6 +17,9 @@ args = parser.parse_args()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=openai_api_key)
 
+# provided that the OpenAI API key is named OPENAI_API_KEY in the .env file, the above 2 lines can be replaced with:
+# llm = ChatOpenAI(model="gpt-4o-mini")
+
 code_prompt = PromptTemplate(
     input_variables=["language", "task"],
     template="Write a very sort {language} functon that will {task}",
