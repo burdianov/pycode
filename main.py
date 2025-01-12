@@ -10,7 +10,7 @@ from langchain.schema.runnable import RunnableSequence
 load_dotenv()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--task", type=str, default="return a list of numbers")
+parser.add_argument("--task", type=str, default="return a list of numbers.")
 parser.add_argument("--language", type=str, default="python")
 args = parser.parse_args()
 
@@ -22,7 +22,7 @@ llm = ChatOpenAI(model="gpt-4o-mini", openai_api_key=openai_api_key)
 
 code_prompt = PromptTemplate(
     input_variables=["language", "task"],
-    template="Write a very sort {language} functon that will {task}",
+    template="Write a very sort {language} functon that will {task}. Return the code only.",
 )
 
 code_chain = RunnableSequence(code_prompt, llm)
